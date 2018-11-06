@@ -1,0 +1,227 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Importing data in R
+
+## Flat files (csv)
+```{r}
+# Function to enter file paths fast:
+path <- '/home/ilves/Documents/R_Rstudio/R/data_files/'
+
+f <- function(x) {
+  # x : string, filename to read
+  path <- '/home/ilves/Documents/R_Rstudio/R/data_files/'
+  paste(path, x, sep='')
+}
+```
+
+
+```{r}
+
+# univ_path <- file.path("~", "")
+
+pools <- read.csv(f('swimming_pools.csv'), stringsAsFactors = FALSE) 
+# stringsAsFactors = TRUE converts values to categorical variables
+
+str(pools)
+```
+### tab-delimited files
+```{r}
+hotdogs <- read.delim(f('hotdogs.txt'), header=FALSE)
+
+summary(hotdogs)
+```
+
+### excotic sep format
+read any tabular file into df
+```{r}
+hotdogs <- read.table(f('hotdogs.txt'), 
+                      sep = '\t', 
+                      col.names = c("type", "calories", "sodium"))
+head(hotdogs)
+```
+```{r}
+# Select the hot dog with the least calories: lily
+lily <- hotdogs[which.min(hotdogs$calories), ]
+
+# which. returns the index of inquired variable
+
+# Select the observation with the most sodium: tom
+tom <- hotdogs[which.max(hotdogs$sodium), ]
+cat(paste(lily, tom), sep = '\n\n')
+```
+
+### Column classes
+If a column is set to "NULL" in the colClasses vector, this column will be skipped and will not be loaded into the data frame.
+```{r}
+hotdogs2 <- read.delim(f("hotdogs.txt"), header = FALSE, 
+                       col.names = c("type", "calories", "sodium"),
+                       colClasses = c("factor", "NULL", "numeric"))
+
+
+# Display structure of hotdogs2
+str(hotdogs2)
+```
+
+# readr package()
+```{r}
+library(readr)
+
+read_csv(f('potatoes.csv'))
+```
+```{r}
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import potatoes.txt: potatoes
+potatoes <- read_tsv(f('potatoes.txt'), col_names=properties)
+
+# Call head() on potatoes
+head(potatoes)
+```
+read_delim() is the main readr function
+```{r}
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import potatoes.txt using read_delim(): potatoes
+potatoes <- read_delim(f('potatoes.txt'), delim='\t', col_names=properties)
+
+# Print out potatoes
+potatoes
+```
+## skip, n_max
+Through skip and n_max you can control which part of your flat file you're actually importing into R.
+
+* skip specifies the number of lines you're ignoring in the flat file before actually starting to import data.
+* n_max specifies the number of lines you're actually importing.
+
+**Watch out**: Once you skip some lines, you also skip the first line that can contain column names!
+```{r}
+# Column names
+properties <- c("area", "temp", "size", "storage", "method",
+                "texture", "flavor", "moistness")
+
+# Import 5 observations from potatoes.txt: potatoes_fragment
+potatoes_fragment <- read_tsv(f("potatoes.txt"), skip = 6, n_max = 5, col_names = properties)
+```
+# data.table package
+* fast
+
+## fread()
+**drop** and **select** arguments, to drop or select variables of interest by position or by column name
+```{r}
+library(data.table)
+# Import columns 6 and 8 of potatoes.csv: potatoes
+potatoes <- fread(f('potatoes.csv'), select=c(6,8))
+
+# Plot texture (x) and moistness (y) of potatoes
+plot(x=potatoes$texture, y=potatoes$moistness)
+```
+# readxl
+
+## List the sheets of an Excel file
+```{r}
+# Load the readxl package
+library(readxl)
+
+# Print the names of all worksheets
+excel_sheets(f('urbanpop.xlsx'))
+```
+
+## Import an Excel sheet
+```{r}
+# Read the sheets, one by one
+pop_1 <- read_excel(f("urbanpop.xlsx"), sheet = 1)
+pop_2 <- read_excel(f("urbanpop.xlsx"), sheet = 2)
+pop_3 <- read_excel(f('urbanpop.xlsx'), sheet = 3)
+
+# Put pop_1, pop_2 and pop_3 in a list: pop_list
+pop_list <- list(pop_1, pop_2, pop_3)
+
+# Display the structure of pop_list
+str(pop_list)[1:5]
+```
+## reading a workbook
+Example code:
+```{r}
+# my_workbook <- lapply(excel_sheets("data.xlsx"),
+#                       read_excel,
+#                       path = "data.xlsx")
+```
+The read_excel() function is called multiple times on the "data.xlsx" file and each sheet is loaded in one after the other. The result is a list of data frames, each data frame representing one of the sheets in data.xlsx.
+```{r}
+# Read all Excel sheets with lapply(): pop_list
+pop_list <- lapply(excel_sheets(f('urbanpop.xlsx')),
+read_excel, path=f('urbanpop.xlsx'))
+
+# Display the structure of pop_list
+str(pop_list)
+```
+## remove NA values from DFs
+```{r}
+# na.omit(DF)
+```
+# XLConnect
+```{r}
+library(XLConnect)
+
+# Build connection to urbanpop.xlsx
+my_book <- loadWorkbook(f("urbanpop.xlsx"))
+
+# List the sheets in my_book
+getSheets(my_book)
+```
+## createSheet()
+```{r}
+my_book <- loadWorkbook(f('urbanpop.xlsx'))
+getSheets(my_book)
+```
+```{r}
+createSheet(my_book, 'data_summary')
+getSheets(my_book)
+```
+
+## writeWorksheet()
+```{r}
+# Create data frame: summ
+sheets <- getSheets(my_book)[1:3]
+dims <- sapply(sheets, function(x) dim(readWorksheet(my_book, sheet = x)), USE.NAMES = FALSE)
+summ <- data.frame(sheets = sheets,
+                   nrows = dims[1, ],
+                   ncols = dims[2, ])
+
+# Add data in summ to "data_summary" sheet
+writeWorksheet(my_book, data=summ, sheet='data_summary')
+```
+
+## saveWorkbook()
+```{r}
+saveWorkbook(my_book, f('summary.xlsx'))
+```
+
+## reneameSheet()
+```{r}
+my_book <- loadWorkbook(f('summary.xlsx'))
+getSheets(my_book)
+```
+```{r}
+# Rename "data_summary" sheet to "summary"
+renameSheet(my_book, sheet='data_summary', newName='summary')
+
+# Print out sheets of my_book
+getSheets(my_book)
+```
+
+## removeSheet()
+```{r}
+# Remove the fourth sheet
+removeSheet(my_book, sheet='summary')
+
+getSheets(my_book)
+```
+

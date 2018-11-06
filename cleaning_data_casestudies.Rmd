@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # sales.csv case study
 Lets load in the DF. We do not knwo anything about the factor variables so we set all character/string values to be processed just strings.
 ```{r}

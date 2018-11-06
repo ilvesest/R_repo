@@ -1,0 +1,87 @@
+# Relational operators
+* **TRUE = 1**
+* **FALSE = 0**
+
+# Logical operators
+* AND **&**
+* OR **|**
+* NOT **!**
+
+## Logical operators for vectors
+* **&&** compares only first element of vectors
+```{r}
+c(TRUE, FALSE, FALSE) & c(TRUE, TRUE, FALSE)
+```
+```{r}
+c(TRUE, FALSE, FALSE) && c(TRUE, TRUE, FALSE)
+```
+* **||** Same as for &&
+
+# Conditional statements
+
+## If statement
+if(condition) {
+  expr
+}
+```{r}
+x <- -3
+if(x < 0) {
+  print('x is a negative number')
+}
+```
+
+# Functions
+
+## Function documentation
+```{r}
+help(sd)
+?sd
+```
+## Arguments of a function
+```{r}
+# shows the arguments of a given function
+args(sd)
+```
+## The triple() function
+```{r}
+# my_function <- function(arg1, arg2) {
+#   body
+# }
+```
+```{r}
+triple <- function(x) {
+  3 * x
+}
+```
+```{r}
+triple(6)
+```
+## using the return explicitly
+```{r}
+triple <- function(x) {
+  y <- 3 * x
+  return(y)
+}
+```
+```{r}
+triple(5)
+```
+```{r}
+?sample
+```
+```{r}
+install.packages("ggvis")
+```
+
+```{r}
+library("ggvis")
+```
+```{r}
+search()
+```
+```{r}
+ggvis(mtcars, ~wt, ~hp)
+```
+# Regular expressions
+
+

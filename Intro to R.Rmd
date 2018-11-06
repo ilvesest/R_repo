@@ -1,0 +1,233 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+## Variable assignment
+```{r}
+x <- 42
+x
+```
+## Basic data types
+* Decimal values like **4.5** are **numerics**
+* Natural numbers like **4** are **integers**
+* Boolean values **TRUE/FALSE** are **logical**
+* **Text** values are **characters**
+
+## Data type checking
+```{r}
+my_logical <- TRUE
+class(my_logical)
+```
+## Vectors
+Vectors are one-dimension arrays that can hold numeric data, character data, or logical data. 
+* In R, you create a vector with the combine function **c()**
+```{r}
+numeric_vector <- c(1, 10, 49)
+character_vector <- c("a", "b", "c")
+boolean_vector <- c(TRUE, FALSE, TRUE)
+numeric_vector
+character_vector
+boolean_vector
+```
+## Naming a vector
+some_vector <- c("John Doe", "poker player")
+names(some_vector) <- c("Name", "Profession")
+```{r}
+some_vector <- c("John Doe", "poker player")
+names(some_vector) <- c("Name", "Profession")
+some_vector
+```
+## Selecting elements from a vector
+* Selecting a single value: c[2]
+* Selecting mutiple values c[c(2,3)]
+```{r}
+some_vector[1]
+character_vector[c(1,3)]
+```
+## Selection by comparison
+Selecting some values of a vector with TRUE logic:
+```{r}
+poker_vector <- c(140, -50, 20, -120, 240)
+days_vector <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+names(poker_vector) <- days_vector
+selection_vector <- poker_vector > 0
+
+poker_winning_days <- poker_vector[selection_vector]
+poker_winning_days
+```
+## Matrix
+In R, a **matrix** is a collection of elements of **the same data type** (numeric, character, or logical) arranged into a fixed number of rows and columns. Since you are only working with rows and columns, a matrix is called two-dimensional. 
+```{r}
+matrix(1:9, byrow=TRUE, nrow=3)
+```
+## Naming the matrix rows and columns
+```{r}
+# Box office Star Wars (in millions!)
+new_hope <- c(460.998, 314.4)
+empire_strikes <- c(290.475, 247.900)
+return_jedi <- c(309.306, 165.8)
+
+# Construct matrix
+star_wars_matrix <- matrix(c(new_hope, empire_strikes, return_jedi), nrow = 3, byrow = TRUE)
+
+# Vectors region and titles, used for naming
+region <- c("US", "non-US")
+titles <- c("A New Hope", "The Empire Strikes Back", "Return of the Jedi")
+
+# Name the columns with region
+colnames(star_wars_matrix) <- region
+
+# Name the rows with titles
+rownames(star_wars_matrix) <- titles
+
+# Print out star_wars_matrix
+star_wars_matrix
+```
+## Adding a column to a matrix
+```{r}
+# Construct star_wars_matrix
+box_office <- c(460.998, 314.4, 290.475, 247.900, 309.306, 165.8)
+star_wars_matrix <- matrix(box_office, nrow = 3, byrow = TRUE,
+                           dimnames = list(c("A New Hope", "The Empire Strikes Back", "Return of the Jedi"), 
+                                           c("US", "non-US")))
+
+# The worldwide box office figures
+worldwide_vector <- rowSums(star_wars_matrix)
+
+# Bind the new variable worldwide_vector as a column to star_wars_matrix
+all_wars_matrix <- cbind(star_wars_matrix, worldwide_vector)
+all_wars_matrix
+```
+## Adding a row to matrix
+rbind(matrix1, matrix2)
+
+## Factors
+The term factor refers to a statistical data type used to store **categorical variables**. The difference between a categorical variable and a continuous variable is that a categorical variable can belong to a limited number of categories. A continuous variable, on the other hand, can correspond to an infinite number of values.
+```{r}
+# Sex vector
+sex_vector <- c("Male", "Female", "Female", "Male", "Male")
+
+# Convert sex_vector to a factor
+factor_sex_vector <- factor(sex_vector)
+
+# Print out factor_sex_vector
+factor_sex_vector
+```
+### Nominal categorical variable
+A nominal variable is a categorical variable without an implied order. This means that it is impossible to say that 'one is worth more than the other'. For example, think of the categorical variable animals_vector with the categories "Elephant", "Giraffe", "Donkey" and "Horse". Here, it is impossible to say that one stands above or below the other.
+```{r}
+# Animals
+animals_vector <- c("Elephant", "Giraffe", "Donkey", "Horse")
+factor_animals_vector <- factor(animals_vector)
+factor_animals_vector
+```
+
+### Ordinal categorical variable
+In contrast, ordinal variables do have a natural ordering. Consider for example the categorical variable temperature_vector with the categories: "Low", "Medium" and "High". Here it is obvious that "Medium" stands above "Low", and "High" stands above "Medium".
+```{r}
+# Temperature
+temperature_vector <- c("High", "Low", "High","Low", "Medium")
+factor_temperature_vector <- factor(temperature_vector, order = TRUE, levels = c("Low", "Medium", "High"))
+factor_temperature_vector
+```
+## Specifing the levels
+he order with which you assign the levels is important. If you type levels(factor_survey_vector), you'll see that it outputs [1] "F" "M". If you don't specify the levels of the factor when creating the vector, R will automatically assign them alphabetically. 
+```{r}
+# Code to build factor_survey_vector
+survey_vector <- c("M", "F", "F", "M", "M")
+factor_survey_vector <- factor(survey_vector)
+
+# Specify the levels of factor_survey_vector
+levels(factor_survey_vector) <- c('Female', 'Male')
+
+factor_survey_vector
+```
+## summary() function
+```{r}
+summary(factor_survey_vector)
+```
+```{r}
+summary(survey_vector)
+```
+## Ordered factors example
+```{r}
+# Create speed_vector
+speed_vector <- c("medium", "slow", "slow", "medium", "fast")
+
+# Convert speed_vector to ordered factor vector
+factor_speed_vector <- factor(speed_vector, 
+                              ordered=TRUE, 
+                              levels=c('slow', 'medium', 'fast'))
+factor_speed_vector
+```
+# DataFrame
+## Creating a DF
+```{r}
+# Definition of vectors
+name <- c("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune")
+type <- c("Terrestrial planet", "Terrestrial planet", "Terrestrial planet", 
+          "Terrestrial planet", "Gas giant", "Gas giant", "Gas giant", "Gas giant")
+diameter <- c(0.382, 0.949, 1, 0.532, 11.209, 9.449, 4.007, 3.883)
+rotation <- c(58.64, -243.02, 1, 1.03, 0.41, 0.43, -0.72, 0.67)
+rings <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
+
+# Create a data frame from the vectors
+planets_df <- data.frame(name, type, diameter, rotation, rings)
+head(planets_df)
+```
+## Structure
+```{r}
+str(planets_df)
+```
+## Select a column
+```{r}
+planets_df[,1]
+```
+```{r}
+planets_df[, 'name']
+```
+```{r}
+planets_df['name']
+```
+```{r}
+planets_df$name
+```
+## subset()
+```{r}
+# Select planets with diameter < 1
+subset(planets_df, diameter < 1)
+```
+## Sorting
+```{r}
+a = c(100, 10, 1, 1000)
+a[order(a)]
+```
+```{r}
+# Use order() to create positions
+positions <-  order(planets_df$diameter)
+
+# Use positions to sort planets_df
+planets_df[positions,]
+```
+# Lists
+A list in R allows you to gather a variety of objects under one name (that is, the name of the list) in an ordered way. These objects can be matrices, vectors, data frames, even other lists, etc.
+## Named list
+```{r}
+# Vector with numerics from 1 up to 10
+my_vector <- 1:10 
+
+# Matrix with numerics from 1 up to 9
+my_matrix <- matrix(1:9, ncol = 3)
+
+# First 10 elements of the built-in data frame mtcars
+my_df <- planets_df[1:4,]
+
+# Adapt list() call to give the components names
+my_list <- list(my_vector, my_matrix, my_df)
+names(my_list) <- c('vec', 'mat', 'df')
+# Print out my_list
+print(my_list)
+```
+
+
