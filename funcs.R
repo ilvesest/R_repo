@@ -26,6 +26,8 @@ info <- function(df) {
   colnames(name_type) <- c("column name", "data type")
   nas <- sum(is.na(df))
   unique_dtypes <- as.vector(unique(name_type$`data type`))
+  cat("Dimensions of the DF:", dim(df)[1], "x", dim(df)[2], fill = TRUE)
   cat("Data types:", unique_dtypes, fill = TRUE)
   cat("Total number of NA-s:", nas, fill = TRUE)
+  name_type
 }
